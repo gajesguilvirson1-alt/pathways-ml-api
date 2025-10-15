@@ -292,14 +292,12 @@ def internal_error(error):
     logger.error(f"Internal server error: {str(error)}")
     return jsonify({'error': 'Internal server error', 'status': 'error'}), 500
 
+# Initialize the system when module loads (for Gunicorn)
+logger.info("Starting Pathways ML Recommendation API...")
+initialize_system()
+
 if __name__ == '__main__':
-    logger.info("Starting Pathways ML Recommendation API...")
-    
-    # Initialize the system
-    if initialize_system():
-        logger.info("System ready! Starting Flask server...")
-        port = int(os.environ.get('PORT', 5000))
-        app.run(debug=False, host='0.0.0.0', port=port)
-    else:
-        logger.error("Failed to initialize system. Exiting...")
-        exit(1)
+    # This runs only when executed directly (not with Gunicorn)
+    logger.info("Running in development mode...")
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=False, host='0.0.0.0', port=port)
